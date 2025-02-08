@@ -28,14 +28,84 @@ export default class Player extends ObjectGraphique {
         //this.ctx.scale(0.5, 0.5);
 
         // tete du monstre
-        ctx.fillStyle = "pink";
+        ctx.fillStyle = "grey";
         ctx.fillRect(0, 0, this.w, this.h);
+
+        //cicatrice sur la tete
+        ctx.translate(10, -10);
+
+        //rotate
+        ctx.rotate(0.3);
+        ctx.fillStyle = "green";
+        ctx.fillRect(30, 10, 40, 2);
+        ctx.fillRect(35, 7, 2, 7);
+        ctx.fillRect(40, 7, 2, 7);
+        ctx.fillRect(45, 7, 2, 7);
+        ctx.fillRect(50, 7, 2, 7);
+        ctx.fillRect(55, 7, 2, 7);
+        ctx.fillRect(60, 7, 2, 7);
+        ctx.fillRect(65, 7, 2, 7);
+        ctx.rotate(-0.3);
+        ctx.translate(-10, 10);
+        
+
         // yeux
-        drawCircleImmediat(ctx, 20, 20, 10, "red");
-        drawCircleImmediat(ctx, 60, 20, 10, "red");
+        drawCircleImmediat(ctx, 30, 40, 10, "beige");
+        drawCircleImmediat(ctx, 70, 40, 10, "beige");
+        drawCircleImmediat(ctx, 30, 40, 5, "red");
+        drawCircleImmediat(ctx, 70, 40, 5, "red");
+
+
+        // bouche
+        ctx.fillStyle = "red";
+        ctx.fillRect(30, 70, 40, 10);
+        ctx.fillStyle = "white";
+        ctx.fillRect(30, 70, 40, 5);
+        //sang qui coule
+        ctx.fillStyle = "red";
+        ctx.fillRect(30, 70, 2, 23);
+        ctx.fillRect(68, 70, 2, 20);
+
+        //drawCircleImmediat(ctx, 20, 20, 10, "red");
+        //drawCircleImmediat(ctx, 60, 20, 10, "red");
 
         // Les bras
-        //this.drawBrasGauche();
+        //ctx.translate(-50, 50);
+        //ctx.translate(-30, 40);
+       // ctx.fillStyle = "grey";
+       // ctx.fillRect(-25, 0, 75, 15);
+       // drawCircleImmediat(ctx,-32, 5, 15, "red");
+       // drawCircleImmediat(ctx, -30, 5, 15, "black");
+       // ctx.translate(30, -30);
+
+        // Les jambes
+        ctx.translate(-50, 100);
+        ctx.fillStyle = "black";
+        ctx.fillRect(35, 20, 40, 15);
+        ctx.translate(0, 0);
+        ctx.fillStyle = "grey";
+        ctx.fillRect(50, 0, 20, 20);
+        ctx.translate(50, -100);
+
+
+        //jambe droite
+        ctx.translate(50, 100);
+        ctx.fillStyle = "black";
+        ctx.fillRect(25, 20, 40, 15);
+        ctx.translate(0, 0);
+        ctx.fillStyle = "grey";
+        ctx.fillRect(30, 0, 20, 20);
+        ctx.translate(-50, -100);
+
+        // Une crète
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, -20, 100, 20);
+        ctx.fillRect(40, -40, 20, 30);
+
+        // Les oreilles
+        ctx.fillStyle = "grey";
+        ctx.fillRect(-5, 10, 5, 20);
+        ctx.fillRect(100, 10, 5, 20);
 
         // restore
         ctx.restore();
@@ -44,6 +114,7 @@ export default class Player extends ObjectGraphique {
         // pour debug
         super.draw(ctx);
     }
+
 
     move() {
         this.x += this.vitesseX;
