@@ -7,6 +7,86 @@ import { initListeners } from "./ecouteurs.js";
 export default class Game {
     objetsGraphiques = [];
 
+    levelIndex = 0;
+
+    levels = [
+        { 
+            playerStart: { x: 100, y: 100 },
+            obstacles: [
+                { x: 200, y: 200, w: 600, h: 20, color: "orange" },
+                { x: 300, y: 220, w: 20, h: 350, color: "red" },
+                { x: 550, y: 500, w: 20, h: 300, color: "yellow" }
+            ],
+            sortie: { x: 700, y: 500, w: 50, h: 50, color: "green" }
+        },
+        { 
+            playerStart: { x: 100, y: 100 }, 
+            obstacles: [
+                { x: 200, y: 50, w: 20, h: 400, color: "purple" },
+                { x: 400, y: 450, w: 20, h: 400, color: "purple" },
+                { x: 600, y: 200, w: 20, h: 400, color: "brown" }
+            ],
+            sortie: { x: 750, y: 400, w: 50, h: 50, color: "green" }
+        },
+        { 
+            playerStart: { x: 100, y: 100 }, 
+            obstacles: [
+                { x: 300, y: 0, w: 40, h: 600, color: "red" },
+                { x: 480, y: 500, w: 200, h: 100, color: "blue" }
+            ],
+            sortie: { x: 700, y: 100, w: 50, h: 50, color: "green" }
+        },
+        { 
+            playerStart: { x: 100, y: 100 }, //a refaire
+            obstacles: [
+                { x: 100, y: 450, w: 150, h: 20, color: "cyan" },
+                { x: 250, y: 250, w: 20, h: 150, color: "blue" },
+                { x: 400, y: 400, w: 100, h: 20, color: "magenta" },
+                { x: 550, y: 150, w: 20, h: 200, color: "black" },
+                { x: 650, y: 300, w: 120, h: 20, color: "brown" }
+            ],
+            sortie: { x: 750, y: 550, w: 50, h: 50, color: "green" }
+        },
+        { 
+            playerStart: { x: 100, y: 100 },  //a refaire
+            obstacles: [
+                { x: 250, y: 250, w: 600, h: 100, color: "purple" },
+                { x: 0, y: 250, w: 120, h: 30, color: "brown" }
+            ],
+            sortie: { x: 750, y: 400, w: 50, h: 50, color: "green" }
+        },
+        {
+            playerStart: { x: 100, y: 100 }, 
+            obstacles: [
+                { x: 150, y: 0, w: 20, h: 500, color: "gray" },
+                { x: 300, y: 200, w: 20, h: 500, color: "black" },
+                { x: 450, y: 100, w: 20, h: 500, color: "red" },
+                { x: 600, y: 0, w: 20, h: 500, color: "blue" }
+            ],
+            sortie: { x: 700, y: 50, w: 50, h: 50, color: "green" }
+        },
+        { 
+            playerStart: { x: 100, y: 100 },  
+            obstacles: [
+                //le W
+                { x: 200, y: 300, w: 20, h: 100, color: "green" },
+                { x: 250, y: 300, w: 20, h: 100, color: "green" },
+                { x: 300, y: 300, w: 20, h: 100, color: "green" },
+                { x: 200, y: 400, w: 120, h: 20, color: "green" },
+                //Le I
+                { x: 350, y: 300, w: 20, h: 120, color: "green" },
+                //le N
+                { x: 400, y: 300, w: 20, h: 120, color: "green" },
+                { x: 420, y: 340, w: 20, h: 40, color: "green" },
+                { x: 440, y: 360, w: 20, h: 40, color: "green" },
+                { x: 460, y: 300, w: 20, h: 120, color: "green" },
+            ],
+            //sortie: { x: 330, y: 230, w: 50, h: 50, color: "green" }
+            sortie: { x: 330, y: 230, w: 50, h: 50, color: "green" }
+        }
+        
+    ];
+
     constructor(canvas) {
         this.canvas = canvas;
         // etat du clavier
@@ -19,6 +99,9 @@ export default class Game {
     async init(canvas) {
         this.ctx = this.canvas.getContext("2d");
 
+        // Charger le premier niveau
+        this.loadLevel(this.levelIndex);
+        /*
         this.player = new Player(100, 100);
         this.objetsGraphiques.push(this.player);
 
@@ -39,10 +122,37 @@ export default class Game {
         let sortie = new Sortie(700, 100, 50, 50, "green");
         this.objetsGraphiques.push(sortie);
         // On initialise les écouteurs de touches, souris, etc.
+
+        */
         initListeners(this.inputStates, this.canvas);
 
         console.log("Game initialisé");
     }
+
+    loadLevel(levelIndex) {
+        this.objetsGraphiques = [];
+
+        let level = this.levels[levelIndex];
+
+        // Créer le joueur
+        this.player = new Player(level.playerStart.x, level.playerStart.y);
+        this.objetsGraphiques.push(this.player);
+
+        // Objets qui suivent la souris (optionnel)
+        this.objetSouris = new ObjetSouris(200, 200, 25, 25, "orange");
+        this.objetsGraphiques.push(this.objetSouris);
+
+        // Ajouter les obstacles
+        level.obstacles.forEach(obs => {
+            let obstacle = new Obstacle(obs.x, obs.y, obs.w, obs.h, obs.color);
+            this.objetsGraphiques.push(obstacle);
+        });
+
+        // Ajouter la sortie
+        let sortie = new Sortie(level.sortie.x, level.sortie.y, level.sortie.w, level.sortie.h, level.sortie.color);
+        this.objetsGraphiques.push(sortie);
+    }
+
 
     start() {
         console.log("Game démarré");
@@ -98,18 +208,18 @@ export default class Game {
         this.player.vitesseY = 0;
         
         if(this.inputStates.ArrowRight) {
-            this.player.vitesseX = 3;
+            this.player.vitesseX = 2;
         } 
         if(this.inputStates.ArrowLeft) {
-            this.player.vitesseX = -3;
+            this.player.vitesseX = -2;
         } 
 
         if(this.inputStates.ArrowUp) {
-            this.player.vitesseY = -3;
+            this.player.vitesseY = -2;
         } 
 
         if(this.inputStates.ArrowDown) {
-            this.player.vitesseY = 3;
+            this.player.vitesseY = 2;
         } 
 
         this.player.move();
@@ -186,15 +296,20 @@ export default class Game {
                     // collision avec la sortie
                     console.log("Collision avec la sortie");
                     // PASSER AU NIVEAU SUIVANT
-                    // ON REPOSITIONNE LE JOUEUR
-                    this.player.x = 10;
-                    this.player.y = 10;
-                    this.player.vitesseX = 0;
-                    this.player.vitesseY = 0;
+                    
+                    this.levelIndex++;
+
+                    if (this.levelIndex < this.levels.length) {
+                        this.loadLevel(this.levelIndex); // Charger le niveau suivant
+                    } else {
+                        console.log("FINI !!!");
+                    }
 
                 }
             }
         });
     }
+
+
 
 }
