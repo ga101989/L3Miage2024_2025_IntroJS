@@ -1,5 +1,6 @@
 import Player from "./Player.js";
 import Obstacle from "./Obstacle.js";
+import Sortie from "./Sortie.js";
 import ObjetSouris from "./ObjetSouris.js";
 import { rectsOverlap } from "./collisions.js";
 import { initListeners } from "./ecouteurs.js";
@@ -34,7 +35,9 @@ export default class Game {
 
         // On ajoute la sortie
         // TODO
-
+        //let sortie = new Obstacle(700, 100, 50, 50, "green");
+        let sortie = new Sortie(700, 100, 50, 50, "green");
+        this.objetsGraphiques.push(sortie);
         // On initialise les écouteurs de touches, souris, etc.
         initListeners(this.inputStates, this.canvas);
 
@@ -120,6 +123,9 @@ export default class Game {
 
         // Teste collision avec les obstacles
         this.testCollisionPlayerObstacles();
+
+        // Teste collision avec la sortie
+        this.testCollisionPlayerSortie();
        
     }
 
@@ -168,6 +174,24 @@ export default class Game {
                     this.player.y = 10;
                     this.player.vitesseX = 0;
                     this.player.vitesseY = 0;
+                }
+            }
+        });
+    }
+
+    testCollisionPlayerSortie() {
+        this.objetsGraphiques.forEach(obj => {
+            if(obj instanceof Sortie) {
+                if(rectsOverlap(this.player.x-this.player.w/2, this.player.y - this.player.h/2, this.player.w, this.player.h, obj.x, obj.y, obj.w, obj.h)) {
+                    // collision avec la sortie
+                    console.log("Collision avec la sortie");
+                    // PASSER AU NIVEAU SUIVANT
+                    // ON REPOSITIONNE LE JOUEUR
+                    this.player.x = 10;
+                    this.player.y = 10;
+                    this.player.vitesseX = 0;
+                    this.player.vitesseY = 0;
+
                 }
             }
         });
