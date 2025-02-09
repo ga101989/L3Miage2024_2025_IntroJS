@@ -37,18 +37,18 @@ export default class Game {
             sortie: { x: 700, y: 100, w: 50, h: 50, color: "green" }
         },
         { 
-            playerStart: { x: 100, y: 100 }, //a refaire
+            playerStart: { x: 100, y: 100 },
             obstacles: [
                 { x: 100, y: 450, w: 150, h: 20, color: "cyan" },
                 { x: 250, y: 250, w: 20, h: 150, color: "blue" },
-                { x: 400, y: 400, w: 100, h: 20, color: "magenta" },
+                { x: 420, y: 400, w: 100, h: 20, color: "magenta" },
                 { x: 550, y: 150, w: 20, h: 200, color: "black" },
                 { x: 650, y: 300, w: 120, h: 20, color: "brown" }
             ],
             sortie: { x: 750, y: 550, w: 50, h: 50, color: "green" }
         },
         { 
-            playerStart: { x: 100, y: 100 },  //a refaire
+            playerStart: { x: 100, y: 100 }, 
             obstacles: [
                 { x: 250, y: 250, w: 600, h: 100, color: "purple" },
                 { x: 0, y: 250, w: 120, h: 30, color: "brown" }
@@ -101,29 +101,7 @@ export default class Game {
 
         // Charger le premier niveau
         this.loadLevel(this.levelIndex);
-        /*
-        this.player = new Player(100, 100);
-        this.objetsGraphiques.push(this.player);
 
-        // Un objert qui suite la souris, juste pour tester
-        this.objetSouris = new ObjetSouris(200, 200, 25, 25, "orange");
-        this.objetsGraphiques.push(this.objetSouris);
-
-
-        // On cree deux obstacles
-        let obstacle1 = new Obstacle(300, 0, 40, 600, "red");
-        this.objetsGraphiques.push(obstacle1);
-        let obstacle2 = new Obstacle(500, 500, 100, 100, "blue");
-        this.objetsGraphiques.push(obstacle2);
-
-        // On ajoute la sortie
-        // TODO
-        //let sortie = new Obstacle(700, 100, 50, 50, "green");
-        let sortie = new Sortie(700, 100, 50, 50, "green");
-        this.objetsGraphiques.push(sortie);
-        // On initialise les écouteurs de touches, souris, etc.
-
-        */
         initListeners(this.inputStates, this.canvas);
 
         console.log("Game initialisé");
@@ -240,54 +218,62 @@ export default class Game {
     }
 
     testCollisionPlayerBordsEcran() {
-        // Raoppel : le x, y du joueur est en son centre, pas dans le coin en haut à gauche!
-        if(this.player.x - this.player.w/2 < 0) {
-            // On stoppe le joueur
-            this.player.vitesseX = 0;
-            // on le remet au point de contaxct
-            this.player.x = this.player.w/2;
-        }
-        if(this.player.x + this.player.w/2 > this.canvas.width) {
-            this.player.vitesseX = 0;
-            // on le remet au point de contact
-            this.player.x = this.canvas.width - this.player.w/2;
-        }
 
-        if(this.player.y - this.player.h/2 < 0) {
-            this.player.y = this.player.h/2;
-            this.player.vitesseY = 0;
+        const screenWidth = this.canvas.width;
+        const screenHeight = this.canvas.height;
 
+        const hitboxPaddingX = 30; // Largeur supplémentaire
+        const hitboxPaddingY = 70; // Hauteur supplémentaire
+
+        const hitboxX = this.player.x - this.player.w / 2 - hitboxPaddingX / 2;
+        const hitboxY = this.player.y - this.player.h / 2 - hitboxPaddingY / 2;
+        const hitboxW = this.player.w + hitboxPaddingX;
+        const hitboxH = this.player.h + hitboxPaddingY;
+
+        // Vérification avec l'écran
+        if (hitboxX < 0) {
+            this.player.x = hitboxPaddingX / 2 + this.player.w / 2;
+            this.player.vitesseX = 0;
         }
-       
-        if(this.player.y + this.player.h/2 > this.canvas.height) {
+        if (hitboxX + hitboxW > screenWidth) {
+            this.player.x = screenWidth - hitboxPaddingX / 2 - this.player.w / 2;
+            this.player.vitesseX = 0;
+        }
+        if (hitboxY < 0) {
+            this.player.y = hitboxPaddingY / 2 + this.player.h / 2;
             this.player.vitesseY = 0;
-            this.player.y = this.canvas.height - this.player.h/2;
+        }
+        if (hitboxY + hitboxH > screenHeight) {
+            this.player.y = screenHeight - hitboxPaddingY / 2 - this.player.h / 2;
+            this.player.vitesseY = 0;
         }
     }
 
-    testCollisionPlayerObstacles() {
-        this.objetsGraphiques.forEach(obj => {
-            if(obj instanceof Obstacle) {
-                if(rectsOverlap(this.player.x-this.player.w/2, this.player.y - this.player.h/2, this.player.w, this.player.h, obj.x, obj.y, obj.w, obj.h)) {
-                    // collision
 
-                    // ICI TEST BASIQUE QUI ARRETE LE JOUEUR EN CAS DE COLLIION.
-                    // SI ON VOULAIT FAIRE MIEUX, ON POURRAIT PAR EXEMPLE REGARDER OU EST LE JOUEUR
-                    // PAR RAPPORT A L'obstacle courant : il est à droite si son x est plus grand que le x de l'obstacle + la largeur de l'obstacle
-                    // il est à gauche si son x + sa largeur est plus petit que le x de l'obstacle
-                    // etc.
-                    // Dans ce cas on pourrait savoir comment le joueur est entré en collision avec l'obstacle et réagir en conséquence
-                    // par exemple en le repoussant dans la direction opposée à celle de l'obstacle...
-                    // Là par défaut on le renvoie en x=10 y=10 et on l'arrête
-                    console.log("Collision avec obstacle");
-                    this.player.x = 10;
-                    this.player.y = 10;
-                    this.player.vitesseX = 0;
-                    this.player.vitesseY = 0;
+        testCollisionPlayerObstacles() { 
+            this.objetsGraphiques.forEach(obj => {
+                if(obj instanceof Obstacle) {
+                    let marginTop = 30;   // Pour la crête
+                    let marginBottom = 30; // Pour les jambes
+                    let marginSides = 5;  // Pour les oreilles
+        
+                    let playerX = this.player.x - this.player.w / 2 - marginSides;
+                    let playerY = this.player.y - this.player.h / 2 - marginTop;
+                    let playerW = this.player.w + marginSides * 2;
+                    let playerH = this.player.h + marginTop + marginBottom;
+        
+                    if(rectsOverlap(playerX, playerY, playerW, playerH, obj.x, obj.y, obj.w, obj.h)) {
+
+                        console.log("Collision avec obstacle !");
+                        this.player.x = 10;
+                        this.player.y = 10;
+                        this.player.vitesseX = 0;
+                        this.player.vitesseY = 0;
+                    }
                 }
-            }
-        });
-    }
+            });
+        }
+        
 
     testCollisionPlayerSortie() {
         this.objetsGraphiques.forEach(obj => {
